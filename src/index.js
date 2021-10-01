@@ -73,7 +73,6 @@ app.post("/api/users", (req, res) => {
     [firstname, lastname, email],
     (err, result) => {
       if (err) {
-        console.log(req.body);
         console.log(err);
         res.status(500).send("Error saving the User ");
       } else {
@@ -93,7 +92,6 @@ app.put("/api/users/:id", (req, res) => {
     (err, result) => {
       if (err) {
         console.log(err);
-        console.log(userInfos);
         res.status(500).send("Error updating the user");
       } else {
         res.status(200).send("User updated successfully 🎉");
