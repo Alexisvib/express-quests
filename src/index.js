@@ -13,6 +13,7 @@ db.connect((err) => {
 
 
 const app = express();
+app.use(express.json())
 
 const port = process.env.PORT || 3000;
 
@@ -50,6 +51,42 @@ app.get("/api/search", (req, res) => {
 app.get("/api/users", (req, res) => {
   res.status(401).send("unauthorized");
 });
+
+
+app.post("/api/movies", (req, res) => {
+    const { title, director, year, color, duration } = req.body;
+    db.query(
+        'INSERT INTO movies (title, director, year, color, duration) VALUES (?,?,?,?,?)',
+        [title, director, year, color, duration],
+        (err, result) => {
+            if(err) {
+                console.log(err);
+                res.status(500).send('Error saving the movie')
+            } else {
+                res.status(201).send('Movie saved successfully')
+            }
+        }
+    );
+  });
+  
+
+  app.post("/api/users", (req, res) => {
+    const { firstname, lastname, email } = req.body;
+    db.query(
+        'INSERT INTO user (firstname, lastname, email) VALUES (?,?,?)',
+        [firstname,lastname, email],
+        (err, result) => {
+            if(err) {
+                console.log(err);
+                res.status(500).send('Error saving the USer')
+            } else {
+                res.status(201).send('User saved successfully')
+            }
+        }
+    );
+  });
+
+
 
 app.listen(port, () => {
   console.log(`Server is running on port : ${port}`);
