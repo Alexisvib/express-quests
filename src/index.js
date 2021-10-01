@@ -100,6 +100,29 @@ app.put("/api/users/:id", (req, res) => {
   );
 });
 
+app.delete("/api/users/:id", (req, res) => {
+  const userId = req.params.id;
+  db.query("DELETE FROM user WHERE id = ?", [userId], (err, result) => {
+    if (err) {
+      res.status(500).send("Error deleting the user");
+    } else {
+      res.status(200).send("User deleted successfully");
+    }
+  });
+});
+
+
+app.delete("/api/movies/:id", (req, res) => {
+    const movieId = req.params.id;
+    db.query("DELETE FROM movies WHERE id = ?", [movieId], (err, result) => {
+      if (err) {
+        res.status(500).send("Error deleting the movie");
+      } else {
+        res.status(200).send("Movie deleted successfully");
+      }
+    });
+  });
+
 app.listen(port, () => {
   console.log(`Server is running on port : ${port}`);
 });
