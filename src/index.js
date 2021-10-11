@@ -109,10 +109,45 @@ app.post("/api/movies", (req, res) => {
         console.log(err);
         res.status(500).send("Error saving the movie");
       } else {
-        res.status(201).send("Movie saved successfully");
+        const id = result.insertId;
+        const movieCreated = { id, title, director, year, color, duration };
+        res.status(201).send(movieCreated);
       }
     }
   );
+});
+
+app.put("/api/movies/:id", (req, res) => {
+  const movieId = req.params.id;
+
+  db.query("SELECT * FROM movies WHERE id=?", movieId, (err, selectResults) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send("Error getting the movie from the db !");
+    } else {
+      const movieFromDb = selectResults[0];
+      if (movieFromDb) {
+        const movieUpdateInfo = req.body;
+        /*  ------     UPDATE           ------ */
+        db.query(
+          "UPDATE movies SET ? WHERE id = ?",
+          [movieUpdateInfo, movieId],
+          (err, resultUpdate) => {
+            if (err) {
+              console.log(err);
+              res.status(500).send("Error updating the user");
+            } else {
+              const updated = { ...movieFromDb, ...movieUpdateInfo };
+              res.status(200).json(updated);
+            }
+          }
+        );
+        /* ----------------------------------  */
+      } else {
+        res.status(404).send("No movie found to this id");
+      }
+    }
+  });
 });
 
 app.post("/api/users", (req, res) => {
@@ -125,7 +160,9 @@ app.post("/api/users", (req, res) => {
         console.log(err);
         res.status(500).send("Error saving the User ");
       } else {
-        res.status(201).send("User saved successfully");
+        const id = result.insertId;
+        const userCreated = { id, firstname, lastname, email };
+        res.status(201).json(userCreated);
       }
     }
   );
@@ -133,20 +170,35 @@ app.post("/api/users", (req, res) => {
 
 app.put("/api/users/:id", (req, res) => {
   const userId = req.params.id;
-  const userInfos = req.body;
 
-  db.query(
-    "UPDATE user SET ? WHERE id = ?",
-    [userInfos, userId],
-    (err, result) => {
-      if (err) {
-        console.log(err);
-        res.status(500).send("Error updating the user");
+  db.query("SELECT * FROM users WHERE id=?", userId, (err, selectResults) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send("Error getting the user from the db");
+    } else {
+      const userFromDb = selectResults[0];
+      if (userFromDb) {
+        const userUpdateInfo = req.body;
+        /*  ------     UPDATE           ------ */
+        db.query(
+          "UPDATE users SET ? WHERE id = ?",
+          [userUpdateInfo, userId],
+          (err, resultUpdate) => {
+            if (err) {
+              console.log(err);
+              res.status(500).send("Error updating the user");
+            } else {
+              const updated = { ...userFromDb, ...userUpdateInfo };
+              res.status(200).json(updated);
+            }
+          }
+        );
+        /* ----------------------------------  */
       } else {
-        res.status(200).send("User updated successfully 🎉");
+        res.status(404).send("No user found to this id");
       }
     }
-  );
+  });
 });
 
 app.delete("/api/users/:id", (req, res) => {
