@@ -48,6 +48,12 @@ const findOne = (id) => {
     .then(([results]) => results[0]);
 };
 
+const findByToken = (token) => {
+  return db
+    .query("SELECT * FROM users WHERE token = ?", [token])
+    .then(([results]) => results[0]);
+};
+
 const findByEmail = (email) => {
   return db
     .query("SELECT * FROM users WHERE email = ?", [email])
@@ -91,4 +97,5 @@ module.exports = {
   destroy,
   findByEmail,
   findByEmailWithDifferentId,
+  findByToken,
 };
