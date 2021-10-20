@@ -4,14 +4,12 @@ const { calculateToken } = require("../helpers/users");
 
 authRouter.post("/checkCredentials", (req, res) => {
   const user = req.body;
-  console.log(req.body);
   User.findByEmail(user.email).then((existingUser) => {
     if (existingUser) {
       User.verifyPassword(user.password, existingUser.hashedPassword)
         .then((passwordCorrect) => {
           if (passwordCorrect) {
-            const token = calculateToken(user.email);
-            User.update(existingUser.id, { token: token });
+            const token = calculateToken(existingUser.id, existingUser.email);
             res.cookie("user_token", token);
             res.send();
           } else {
