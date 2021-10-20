@@ -33,7 +33,9 @@ usersRouter.post("/", (req, res) => {
       if (existingUserWithEmail) return Promise.reject("DUPLICATE_EMAIL");
       validationErrors = User.validate(req.body);
       if (validationErrors) return Promise.reject("INVALID_DATA");
-      return User.create(req.body);
+      if (req.body.hashedPassword.length < 9)
+        return Promise.reject("PASSWORD_LENGTH_INCORRECT");
+      return (createdUser = User.create(req.body));
     })
     .then((createdUser) => {
       res.status(201).json(createdUser);
@@ -44,6 +46,8 @@ usersRouter.post("/", (req, res) => {
         res.status(409).json({ message: "This email is already used" });
       else if (err === "INVALID_DATA")
         res.status(422).json({ validationErrors });
+      else if (err === "PASSWORD_LENGTH_INCORRECT")
+        res.status(422).json({ message: "The given password should have more than 8 characters " });
       else res.status(500).send("Error saving the user");
     });
 });
